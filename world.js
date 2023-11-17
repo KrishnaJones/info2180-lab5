@@ -1,29 +1,28 @@
-window.onload = function ()
+document.addEventListener("DOMContentLoaded", () => 
 {
-    let searchBtn = document.querySelector("#lookup");
-    let searchIpt = document.querySelector("#country");
+    const searchbtn = document.querySelector("#lookup");
+    const searchbtn2 = document.querySelector("#lookupcity");
+    const searchipt = document.querySelector("#country");
 
-    searchBtn.addEventListener('click', function (event)
+    const makeRequest = async (url) => 
+    {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("There was an Error");
+            document.querySelector("#result").innerHTML = await response.text();
+        } catch (error) {
+            document.querySelector("#result").innerHTML = "There was an Error";
+            console.error(error);
+        }
+    };
+
+    const handleClick = (context = "") => (event) => 
     {
         event.preventDefault();
-        const input = searchIpt.value.trim();
-        console.log(input);
+        const url = "world.php?country=" + searchipt.value + (context ? `&context=${context}` : "");
+        makeRequest(url);
+    };
 
-        const httpRequest = new XMLHttpRequest();
-        const url = `world.php?country=${input}`;
-
-        httpRequest.onreadystatechange = function ()
-        {
-            if (httpRequest.readyState === XMLHttpRequest.DONE)
-            {
-                if (httpRequest.status === 200)
-                {
-                    document.getElementById("result").innerHTML = httpRequest.responseText;
-                }
-            }
-        };
-
-        httpRequest.open('GET', url);
-        httpRequest.send();
-    });
-};
+    searchbtn.addEventListener("click", handleClick());
+    searchbtn2.addEventListener("click", handleClick("cities"));
+});
